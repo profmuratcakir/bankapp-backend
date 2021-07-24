@@ -1,5 +1,8 @@
 package com.bank.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,7 +11,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
 public class User  implements UserDetails {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -33,6 +43,7 @@ public class User  implements UserDetails {
     }
 
     @Override
+    // DİKKAT: Bu kısım implement edilmedi!!!
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
