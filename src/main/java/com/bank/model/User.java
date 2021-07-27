@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -41,6 +42,12 @@ public class User  implements UserDetails {
         this.lastName = lastName;
         this.email = email;
     }
+
+    @OneToOne
+    private Account account;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Recipient> recipients;
 
     @Override
     // DİKKAT: Bu kısım implement edilmedi!!!
