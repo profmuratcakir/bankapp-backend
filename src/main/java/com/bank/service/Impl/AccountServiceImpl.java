@@ -65,7 +65,6 @@ public class AccountServiceImpl implements AccountService {
         Account account = user.getAccount();
         Double amount = request.getAmount();
         account.setAccountBalance(account.getAccountBalance().subtract(new BigDecimal(amount)));
-        accountRepo.save(account);
         Date date = new Date();
         Transaction transaction = new Transaction(date, request.getComment(),
                 TransactionType.WITHDRAW.toString(),
@@ -73,6 +72,7 @@ public class AccountServiceImpl implements AccountService {
                 false, account );
 
         transactionService.saveTransaction(transaction);
+        accountRepo.save(account);
     }
 
     @Override
@@ -91,8 +91,6 @@ public class AccountServiceImpl implements AccountService {
                 TransactionType.TRANSFER.toString(),
                 amount,account.getAccountBalance(),
                 false, account );
-
-//        transactionService.saveTransaction(transaction);
-
+        transactionService.saveTransaction(transaction);
     }
 }

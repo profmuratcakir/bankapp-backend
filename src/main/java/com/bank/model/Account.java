@@ -17,6 +17,6 @@ public class Account {
     private Long accountNumber;
     private BigDecimal accountBalance;
 
-    @OneToMany(mappedBy="account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Transaction> transactions;
 }
