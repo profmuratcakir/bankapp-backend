@@ -13,5 +13,5 @@ public interface TransactionRepo extends CrudRepository<Transaction, Long> {
     List<Transaction> getTransactionByAccountAndDate(@Param("accountId") Long accountId,@Param("date") Date date);
 
     @Query("select tr from Transaction tr where tr.date >= :date order by tr.date")
-    List<Transaction> getTransacationByDate(@Param("date") Date date);
+    List<Transaction> getTransactionByDate(@Param("date") Date date);
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -51,13 +52,16 @@ public class AccountServiceImpl implements AccountService {
         Account account = user.getAccount();
         Double amount = request.getAmount();
         account.setAccountBalance(account.getAccountBalance().add(new BigDecimal(amount)));
-        accountRepo.save(account);
         Date date = new Date();
         Transaction transaction = new Transaction(date, request.getComment(),
                                             TransactionType.DEPOSIT.toString(),
                                             amount,account.getAccountBalance(),
                   false, account );
+        List<Transaction> transactions = account.getTransactions();
+        transactions.add(transaction);
+        account.setTransactions(transactions);
         transactionService.saveTransaction(transaction);
+        accountRepo.save(account);
     }
 
     @Override
@@ -70,7 +74,9 @@ public class AccountServiceImpl implements AccountService {
                 TransactionType.WITHDRAW.toString(),
                 amount,account.getAccountBalance(),
                 false, account );
-
+        List<Transaction> transactions = account.getTransactions();
+        transactions.add(transaction);
+        account.setTransactions(transactions);
         transactionService.saveTransaction(transaction);
         accountRepo.save(account);
     }
@@ -85,12 +91,17 @@ public class AccountServiceImpl implements AccountService {
         Account account = user.getAccount();
         Double amount = request.getAmount();
         account.setAccountBalance(account.getAccountBalance().subtract(new BigDecimal(amount)));
-        accountRepo.save(account);
+
         Date date = new Date();
         Transaction transaction = new Transaction(date, request.getRecipientName(),
                 TransactionType.TRANSFER.toString(),
                 amount,account.getAccountBalance(),
                 false, account );
+        List<Transaction> transactions = account.getTransactions();
+        transactions.add(transaction);
+        account.setTransactions(transactions);
+        accountRepo.save(account);
         transactionService.saveTransaction(transaction);
+
     }
 }
