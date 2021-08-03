@@ -102,6 +102,5 @@ public class AccountServiceImpl implements AccountService {
         account.setTransactions(transactions);
         accountRepo.save(account);
         transactionService.saveTransaction(transaction);
-
     }
 }

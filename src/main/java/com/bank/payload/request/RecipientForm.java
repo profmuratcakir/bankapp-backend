@@ -14,8 +14,7 @@ public class RecipientForm {
     @Email
     private String email;
 
-    @NotNull
-    private Integer phone;
+    private String phone;
 
     @NotBlank
     @Size(min=3, max=50)

@@ -10,4 +10,6 @@ public interface UserService {
     UserDAO getUserDAOByName(String username);
     List<UserDAO> getAllUsers();
     List<RecipientDAO> getRecipients(String username);
- }
+    void deleteUser(Long id);
+
+}

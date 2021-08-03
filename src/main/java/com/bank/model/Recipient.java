@@ -15,11 +15,11 @@ public class Recipient {
     private Long id;
     private String name;
     private String email;
-    private Integer phone;
+    private String phone;
     private String bankName;
     private String bankNumber;
 
-    public Recipient(String name, String email, Integer phone,
+    public Recipient(String name, String email, String phone,
                      String bankName, String bankNumber) {
         this.name = name;
         this.email = email;

@@ -32,24 +32,37 @@ public class AccountController {
     public ResponseEntity<TransactionResponse> deposit (@Valid @RequestBody TransactionRequest transactionRequest){
         TransactionResponse response = new TransactionResponse();
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        accountService.deposit(transactionRequest, user);
-        response.setMessage("Amount succesfully deposited");
-        response.setSuccess(true);
-        UserDAO userDAO = userService.getUserDAOByName(user.getUsername());
-        response.setUser(userDAO);
+        if(transactionRequest.getAmount() > 0) {
+            accountService.deposit(transactionRequest, user);
+            response.setMessage("Amount succesfully deposited");
+            response.setSuccess(true);
+            UserDAO userDAO = userService.getUserDAOByName(user.getUsername());
+            response.setUser(userDAO);
+        }else{
+            response.setMessage("Amount should be bigger than 0");
+            response.setSuccess(false);
+        }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 
     @PostMapping("/withdraw")
     public ResponseEntity<TransactionResponse> withdraw (@Valid @RequestBody TransactionRequest transactionRequest){
         TransactionResponse response = new TransactionResponse();
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // Account Balance Check
+        if (user != null && user.getAccount() != null
+                && user.getAccount().getAccountBalance().intValue() >= transactionRequest.getAmount()) {
         accountService.withdraw(transactionRequest, user);
         response.setMessage("Amount succesfully withdrawed");
         response.setSuccess(true);
         UserDAO userDAO = userService.getUserDAOByName(user.getUsername());
         response.setUser(userDAO);
+        } else {
+            response.setMessage("Sorry! you don't have sufficient amount to withdraw");
+            response.setSuccess(false);
+        }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -57,11 +70,19 @@ public class AccountController {
     public ResponseEntity<TransactionResponse> transfer (@Valid @RequestBody TransferRequest transferRequest){
         TransactionResponse response = new TransactionResponse();
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        accountService.transfer(transferRequest, user);
-        response.setMessage("Amount succesfully transfered");
+
+        if (user != null && user.getAccount() != null
+                && user.getAccount().getAccountBalance().intValue() >= transferRequest.getAmount()) {
+            accountService.transfer(transferRequest, user);
+            response.setMessage("Amount transfered succesfully");
         response.setSuccess(true);
         UserDAO userDAO = userService.getUserDAOByName(user.getUsername());
         response.setUser(userDAO);
+        } else {
+            response.setMessage("Amount is not  sufficient");
+            response.setSuccess(false);
+        }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

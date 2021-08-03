@@ -3,9 +3,12 @@ package com.bank.service.Impl;
 import com.bank.dao.RecipientDAO;
 import com.bank.dao.TransactionDAO;
 import com.bank.dao.UserDAO;
+import com.bank.model.Account;
 import com.bank.model.Recipient;
 import com.bank.model.Transaction;
 import com.bank.model.User;
+import com.bank.repository.AccountRepo;
+import com.bank.repository.TransactionRepo;
 import com.bank.repository.UserRepo;
 import com.bank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,12 @@ public class UserDetailServiceImpl implements UserDetailsService, UserService {
     @Autowired
     UserRepo userRepo;
 
+    @Autowired
+    TransactionRepo transactionRepo;
+
+    @Autowired
+    AccountRepo accountRepo;
+
     @Override
     public UserDAO getUserDAO(User user) {
       UserDAO userDAO = new UserDAO();
@@ -43,18 +52,35 @@ public class UserDetailServiceImpl implements UserDetailsService, UserService {
 
         userDAO.setIsAdmin(isAdmin);
 
-        //AccountNumber and Account Balance
-        if(user.getAccount() != null ){
-            userDAO.setAccountNumber(user.getAccount().getAccountNumber());
-            userDAO.setAccountBalance(user.getAccount().getAccountBalance());
-        }
-        List<TransactionDAO> transactions = user.getAccount().getTransactions().stream().
-                map(this::getTransactionDAO).collect(Collectors.toList());
+        if (isAdmin) {
+            List<Transaction> transactions = (List<Transaction>) transactionRepo.findAll();
+            List<TransactionDAO> transactionDAOs = transactions.stream()
+                    .map(this::getTransactionDAO)
+                    .collect(Collectors.toList());
 
-        userDAO.setTransactions(transactions);
-        List <RecipientDAO> recipients = user.getRecipients().stream().
-                map(this::getRecipientDAO).collect(Collectors.toList());
-        userDAO.setRecipients(recipients);
+            userDAO.setTransactions(transactionDAOs);
+            userDAO.setTotalUsers(userRepo.count());
+            List<Account> accounts = (List<Account>) accountRepo.findAll();
+            Double totalBalance = accounts.stream().mapToDouble(account ->
+                    account.getAccountBalance().doubleValue()).sum();
+            userDAO.setTotalBalance(totalBalance);
+        } else {
+
+            if (user.getAccount() != null) {
+                userDAO.setAccountNumber(user.getAccount().getAccountNumber());
+                userDAO.setAccountBalance(user.getAccount().getAccountBalance());
+
+                List<TransactionDAO> transactions = user.getAccount().getTransactions().stream()
+                        .map(this::getTransactionDAO)
+                        .collect(Collectors.toList());
+
+                userDAO.setTransactions(transactions);
+
+                List<RecipientDAO> recipients = user.getRecipients().stream().map(this::getRecipientDAO)
+                        .collect(Collectors.toList());
+                userDAO.setRecipients(recipients);
+            }
+        }
         return userDAO;
     }
 
@@ -128,6 +154,11 @@ public class UserDetailServiceImpl implements UserDetailsService, UserService {
                 new UsernameNotFoundException("Username not found " + username));
 
         return user;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepo.deleteById(id);
     }
 
 

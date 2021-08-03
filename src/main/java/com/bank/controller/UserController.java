@@ -6,10 +6,7 @@ import com.bank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +24,13 @@ public class UserController {
         List<UserDAO> users = userService.getAllUsers();
         response.setUsers(users);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteUser
+            (@PathVariable(value = "id") String id) {
+        userService.deleteUser(Long.parseLong(id));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
