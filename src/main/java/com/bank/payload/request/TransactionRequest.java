@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class TransactionRequest {
 
-    @NotNull(message = "Amaount can not be blank")
+    @NotNull(message = "Amount can not be blank")
     private Double amount;
 
     @NotBlank
